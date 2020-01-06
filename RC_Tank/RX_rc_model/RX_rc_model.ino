@@ -8,6 +8,15 @@
     - L298N (H-bridge motor controller module)
   
   Author: Kuflievskiy Aleksey kuflievskiy@gmail.com
+
+  @url: Arduino driver for nRF24L01 http://maniacbug.github.com/RF24
+
+
+  @todo: check and replace the RF24 library if possible
+  Optimized fork of nRF24L01 for Arduino & Raspberry Pi/Linux Devices https://tmrh20.github.io/RF24
+  
+  @todo: add arduino CLI  https://github.com/arduino/arduino-cli-example 
+
 */
 
 #include <SPI.h>
