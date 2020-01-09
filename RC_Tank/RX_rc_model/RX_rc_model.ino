@@ -1,23 +1,19 @@
 /**
-  Custom RC Model Robot.
-  Receiver part.
-
-  List of modules used: 
-    - Arduino UNO (microcontroler)
-    - nRF24L01 (radio module)
-    - L298N (H-bridge motor controller module)
-  
-  Author: Kuflievskiy Aleksey kuflievskiy@gmail.com
-
-  @url: Arduino driver for nRF24L01 http://maniacbug.github.com/RF24
-
-
-  @todo: check and replace the RF24 library if possible
-  Optimized fork of nRF24L01 for Arduino & Raspberry Pi/Linux Devices https://tmrh20.github.io/RF24
-  
-  @todo: add arduino CLI  https://github.com/arduino/arduino-cli-example 
-
-*/
+ * Custom RC Model Robot. Receiver part.
+ *  List of modules used:
+ *    - Arduino UNO (MicroController)
+ *    - nRF24L01 (radio module)
+ *    - L298N (H-bridge motor controller module)
+ *
+ *  @author_name: Kuflievskiy Aleksey
+ *  @author_email: kuflievskiy@gmail.com
+ *
+ *  @url: Arduino driver for nRF24L01 http://maniacbug.github.com/RF24
+ *  @todo: check and replace the RF24 library if possible
+ *  Optimized fork of nRF24L01 for Arduino & Raspberry Pi/Linux Devices https://tmrh20.github.io/RF24
+ *  @todo: add Arduino CLI  https://github.com/arduino/arduino-cli-example
+ *
+ */
 
 #include <SPI.h>
 #include "nRF24L01.h"
@@ -34,7 +30,7 @@ const byte THRESHOLD_Y_START_CENTERZONE = 120;
 const byte THRESHOLD_Y_END_CENTERZONE = 130;
 const byte SENSOR_MAX_VALUE = 255;
 
-const byte DEBUG_MODE = 1;
+const byte DEBUG_MODE = 0;
 
 void setup() {
 
@@ -102,8 +98,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("Center position. Do nothing.");
       }
-      stopMotor('left');
-      stopMotor('right');
+      stopMotor("left");
+      stopMotor("right");
     }
 
 
@@ -115,8 +111,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("full-forward");
       }
-      runMotor('right', 'forward', 255);
-      runMotor('left', 'forward', 255);
+      runMotor("right", "forward", 255);
+      runMotor("left", "forward", 255);
     }
 
     // full-backward
@@ -127,8 +123,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("full-backward");
       }
-      runMotor('right', 'backward', 255);
-      runMotor('left', 'backward', 255);
+      runMotor("right", "backward", 255);
+      runMotor("left", "backward", 255);
     }
 
     // full-left
@@ -137,8 +133,8 @@ void loop(void) {
       ( yCoordinate < THRESHOLD_Y_END_CENTERZONE and yCoordinate > THRESHOLD_Y_START_CENTERZONE )
     ) {
       Serial.println("full-left");
-      runMotor('right', 'forward', 255);
-      runMotor('left', 'backward', 255);
+      runMotor("right", "forward", 255);
+      runMotor("left", "backward", 255);
     }
 
     // full-right
@@ -150,10 +146,10 @@ void loop(void) {
         Serial.println("full-right");
       }
       // right motor backward
-      runMotor('right', 'backward', 255);
+      runMotor("right", "backward", 255);
 
       // left motor forward
-      runMotor('left', 'forward', 255);
+      runMotor("left", "forward", 255);
 
     }
 
@@ -165,8 +161,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("forward-left");
       }
-      runMotor('right', 'forward', 255);
-      runMotor('left', 'forward', 150);
+      runMotor("right", "forward", 255);
+      runMotor("left", "forward", 150);
     }
 
     // forward-right
@@ -177,8 +173,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("forward-right");
       }
-      runMotor('right', 'forward', 150);
-      runMotor('left', 'forward', 255);
+      runMotor("right", "forward", 150);
+      runMotor("left", "forward", 255);
     }
 
     // backward-left
@@ -189,8 +185,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("backward-left");
       }
-      runMotor('right', 'backward', 255);
-      runMotor('left', 'backward', 150);
+      runMotor("right", "backward", 255);
+      runMotor("left", "backward", 150);
     }
     // backward-right
     if (
@@ -200,8 +196,8 @@ void loop(void) {
       if (DEBUG_MODE) {
         Serial.println("backward-right");
       }
-      runMotor('right', 'backward', 150);
-      runMotor('left', 'backward', 255);
+      runMotor("right", "backward", 150);
+      runMotor("left", "backward", 255);
     }
   }
 }
@@ -216,25 +212,40 @@ void loop(void) {
 
    @return void
 */
-void runMotor(char motorName, char motorDirection, byte motorSpeed) {
+void runMotor(String motorName, String motorDirection, byte motorSpeed) {
 
-  if ('right' == motorName) {
+
+  //motorSpeed = motorSpeed - 100;
+  Serial.println(motorName+": "+motorDirection+" speed:" + motorSpeed);
+  
+  if (String("left") == motorName) {
     analogWrite(5, motorSpeed); // EN1
-    if ('forward' == motorDirection) {
+    if (String("forward") == motorDirection) {
+
+      digitalWrite(7, 0); // IN1
+      digitalWrite(6, 1); // IN2      
+      Serial.println(motorName + "== right forward!");
+      
+    } else if (String("backward") == motorDirection) {
       digitalWrite(7, 1); // IN1
       digitalWrite(6, 0); // IN2
-    } else if ('backward' == motorDirection) {
-      digitalWrite(7, 0); // IN1
-      digitalWrite(6, 1); // IN2
+
+      Serial.println(motorName + "== right backward!");
     }
-  } else if ('left' == motorName) {
+  } else if (String("right") == motorName) {
     analogWrite(3, motorSpeed); // EN2
-    if ('forward' == motorDirection) {
-      digitalWrite(4, 0); // IN3
-      digitalWrite(2, 1 ); // IN4
-    } else if ('backward' == motorDirection) {
+    if (String("forward") == motorDirection) {
+
       digitalWrite(4, 1); // IN3
-      digitalWrite(2, 0 ); // IN4
+      digitalWrite(2, 0); // IN4
+
+      Serial.println(motorName + "== left forward!");
+            
+    } else if (String("backward") == motorDirection) {
+      digitalWrite(4, 0); // IN3
+      digitalWrite(2, 1); // IN4      
+      
+      Serial.println(motorName + "== left backward!");
     }
   }
 }
@@ -247,13 +258,13 @@ void runMotor(char motorName, char motorDirection, byte motorSpeed) {
 
    @return void
 */
-void stopMotor(char motorName) {
-  if ('right' == motorName) {
+void stopMotor(String motorName) {
+  if (String("right") == motorName) {
     analogWrite(5, 255); // EN1
     digitalWrite(7, 1); // IN1
     digitalWrite(6, 1); // IN2
 
-  } else if ('left' == motorName) {
+  } else if (String("left") == motorName) {
     analogWrite(3, 255); // EN2
     digitalWrite(4, 1); // IN3
     digitalWrite(2, 1); // IN4
